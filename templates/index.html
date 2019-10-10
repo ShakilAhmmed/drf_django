@@ -1,19 +1,86 @@
 <h1>Template</h1>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<div class="container">
+    <form>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Title</label>
+        <input type="text" class="form-control title">
+        <small class="form-text text-danger title_error"></small>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail1">Description</label>
+        <textarea type="text" class="form-control description"></textarea>
+        <small class="form-text text-danger description_error"></small>
+    </div>
+
+    <div class="form-group">
+        <label for="exampleInputEmail1">Status</label>
+        <select class="form-control status">
+            <option value="1">Active</option>
+            <option value="2">Inactive</option>
+        </select>
+    </div>
+
+
+    <button type="button" class="btn btn-primary save">Submit</button>
+    </form>
+</div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script>
-$.ajax({
-    url:'/api/v1/posts',
-    method:"get",
-    success:function(data){
-        console.log(data)
-    }
+$(document).ready(function(){
+    $(".save").click(function(){
+        var title=$(".title").val();
+        var description=$(".description").val();
+        var status=$(".status").val();
+        var csrf="{{ csrf_token }}";
+        $(".title_error").html('');
+        $(".description_error").html('');
+        $.ajax({
+            url:"{% url 'category' %}",
+            type:"POST",
+            data:{
+                'title':title,
+                'description':description,
+                'status':status,
+                'csrfmiddlewaretoken':csrf
+            },
+            success:function(response){
+                console.log(response);
+                if(response.status===201)
+                {
+                    alert('Data Saved Successfully');
+                }
+                if(response.status===400)
+                {
+                    $(".title_error").html(response.errors.title);
+                    $(".description_error").html(response.errors.description);
+                }
+            }
+
+        });
+    });
+
+
+
+    $.ajax({
+        url:'/api/v1/posts',
+        method:"get",
+        success:function(data){
+            console.log(data)
+        }
+    });
+
+    $.ajax({
+        url:'/api/v1/posts/category',
+        method:"get",
+        success:function(data){
+            console.log(data)
+        }
+    });
+
 });
 
-$.ajax({
-    url:'/api/v1/posts/category',
-    method:"get",
-    success:function(data){
-        console.log(data)
-    }
-});
+
+
 </script>
